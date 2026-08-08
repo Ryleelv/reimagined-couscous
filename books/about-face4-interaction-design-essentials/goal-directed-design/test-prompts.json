@@ -1,0 +1,52 @@
+{
+  "skill": "goal-directed-design",
+  "version": "0.1.0",
+  "source_book": "《About Face 4 / 交互设计精髓》 — Alan Cooper 等",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "请用目标导向设计分析一款智能药盒的交互设计。",
+      "expected_behavior": "应激活 goal-directed-design，并输出定义、作用、步骤和工业设计案例迁移。",
+      "notes": "正面场景：题目明确点名该方法论。"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "337 简答题：说明目标导向设计的含义和作用。",
+      "expected_behavior": "应激活 goal-directed-design，形成定义、作用、案例三段式答案。",
+      "notes": "正面场景：337 明确考察概念。"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "这个自助取号机用户总是找不到下一步，如何从交互角度优化？",
+      "expected_behavior": "可激活 goal-directed-design 或组合相邻 skill，分析用户目标、流程、反馈和容错。",
+      "notes": "正面场景：产品体验优化。"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "背诵包豪斯的发展历史和代表人物。",
+      "expected_behavior": "不应激活 goal-directed-design，应转向设计史相关内容。",
+      "notes": "诱饵：设计史记忆题。"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "请只整理《世界现代设计史》中工艺美术运动的时间线。",
+      "expected_behavior": "不应激活 goal-directed-design，应触发 设计史书目相关 skill。",
+      "notes": "跨书目诱饵：防止交互设计 skill 抢调用。"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "评价一款智能音箱的外观和语音交互体验。",
+      "expected_behavior": "如果重点是语音交互、反馈、任务流程，可调用 goal-directed-design；如果只谈造型审美，则不调用。",
+      "notes": "边界：工业设计外观与交互体验混合题。"
+    }
+  ],
+  "minimum_pass_rate": 0.8,
+  "notes": "当前为复习版草稿测试；正式盲测需在补齐原文和三重验证后执行。"
+}
