@@ -1,0 +1,8 @@
+{
+  "name": "岭境 A3 画板导入器",
+  "id": "lingjing-a3-board-importer-local",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"]
+}

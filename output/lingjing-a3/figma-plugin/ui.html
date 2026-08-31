@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; font: 13px/1.55 Inter, "Microsoft YaHei", sans-serif; color: var(--figma-color-text); background: var(--figma-color-bg); }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    p { margin: 0 0 18px; color: var(--figma-color-text-secondary); }
+    .drop { display: grid; place-items: center; min-height: 170px; padding: 24px; text-align: center; border: 2px dashed var(--figma-color-border); border-radius: 12px; background: var(--figma-color-bg-secondary); cursor: pointer; }
+    .drop.drag { border-color: var(--figma-color-bg-brand); }
+    input { display: none; }
+    #status { min-height: 42px; margin-top: 14px; }
+    .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+    button { padding: 9px 16px; border: 0; border-radius: 7px; font-weight: 600; cursor: pointer; color: var(--figma-color-text); background: var(--figma-color-bg-tertiary); }
+    button.primary { color: var(--figma-color-text-onbrand); background: var(--figma-color-bg-brand); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <h1>岭境 A3 画板导入器</h1>
+  <p>一次选择以下三张 SVG，插件会按顺序横向排入当前 Figma 页面。</p>
+  <label class="drop" id="drop">
+    <input id="files" type="file" accept="image/svg+xml,.svg" multiple>
+    <span><strong>点击或拖入三张 SVG</strong><br>01-design-analysis.svg<br>02-design-sketches.svg<br>03-product-system.svg</span>
+  </label>
+  <div id="status">尚未选择文件。</div>
+  <div class="actions">
+    <button id="cancel">取消</button>
+    <button class="primary" id="import" disabled>导入 Figma</button>
+  </div>
+  <script>
+    const expected = ["01-design-analysis.svg", "02-design-sketches.svg", "03-product-system.svg"];
+    const input = document.querySelector("#files");
+    const drop = document.querySelector("#drop");
+    const status = document.querySelector("#status");
+    const importButton = document.querySelector("#import");
+    let boards = [];
+
+    async function prepare(fileList) {
+      const files = [...fileList];
+      const byName = new Map(files.map((file) => [file.name, file]));
+      const missing = expected.filter((name) => !byName.has(name));
+      if (missing.length) {
+        boards = [];
+        importButton.disabled = true;
+        status.textContent = `文件不完整，缺少：${missing.join("、")}`;
+        return;
+      }
+      boards = await Promise.all(expected.map(async (name) => ({ name, svg: await byName.get(name).text() })));
+      importButton.disabled = false;
+      status.textContent = "已识别三张画板，可以导入。";
+    }
+
+    input.addEventListener("change", () => prepare(input.files));
+    ["dragenter", "dragover"].forEach((event) => drop.addEventListener(event, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+    ["dragleave", "drop"].forEach((event) => drop.addEventListener(event, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
+    drop.addEventListener("drop", (event) => prepare(event.dataTransfer.files));
+    document.querySelector("#cancel").onclick = () => parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
+    importButton.onclick = () => parent.postMessage({ pluginMessage: { type: "import-boards", boards } }, "*");
+  </script>
+</body>
+</html>
